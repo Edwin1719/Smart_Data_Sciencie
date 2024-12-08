@@ -7,15 +7,19 @@ from st_social_media_links import SocialMediaIcons
 import os
 from dotenv import load_dotenv  # Cargar variables de entorno desde el archivo .env
 
-# Configuracion la página
+# Configurar la página
 st.set_page_config(page_title="Contenido para Ciencia de Datos con GPT-4o", page_icon="🤖")
 
-# Cargar la clave de OpenAI desde el archivo .env
+# Cargar las variables de entorno desde el archivo .env
 load_dotenv()  # Carga la clave desde el archivo .env
 openai_api_key = os.getenv("OPENAI_API_KEY")  # Obtiene la clave de la variable de entorno
 
-# Configuración de OpenAI con la clave obtenida
-client = OpenAI(api_key=openai_api_key)
+# Verificar si la clave de OpenAI está vacía
+if not openai_api_key:
+    st.error("No se encontró la clave de OpenAI. Asegúrese de configurar OPENAI_API_KEY en el archivo .env.")
+else:
+    # Configurar el cliente OpenAI con la clave obtenida
+    client = OpenAI(api_key=openai_api_key)
 
 # Función genérica para solicitudes a OpenAI
 def generate_content(task, prompt, max_tokens=1500, temperature=0.7):
@@ -34,6 +38,7 @@ def generate_content(task, prompt, max_tokens=1500, temperature=0.7):
         st.error(f"Ocurrió un error: {str(e)}")
         return None
 
+
 # Función para crear archivos Word
 def create_word_doc(content, title="Contenido Generado"):
     doc = docx.Document()
@@ -44,7 +49,8 @@ def create_word_doc(content, title="Contenido Generado"):
     buffer.seek(0)
     return buffer
 
-# Configuración del Logo y Titulo de la App
+
+# Configuración del Logo y Título de la App
 st.image("https://cdn-icons-png.flaticon.com/512/4824/4824797.png", width=80)  # Ajusta el tamaño del logo
 
 st.markdown(
@@ -54,10 +60,10 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Configuración de la barra lateral
+# Configurar la barra lateral
 section = st.sidebar.selectbox("Selecciona una opción", ["Resúmenes Técnicos", "Código Python", "Dataset"])
 
-# Lógica de las secciones
+# Lógica para las secciones
 if section == "Resúmenes Técnicos":
     st.markdown("### Generación de Resúmenes Técnicos")
     st.markdown(
@@ -75,14 +81,14 @@ if section == "Resúmenes Técnicos":
                 st.markdown(f"### Resumen sobre {topic}")
                 st.markdown(summary)
                 st.download_button(
-                    "Descargar Resumen", 
-                    data=create_word_doc(summary, title=f"Resumen sobre {topic}"), 
+                    "Descargar Resumen",
+                    data=create_word_doc(summary, title=f"Resumen sobre {topic}"),
                     file_name="resumen_tecnico.docx",
                     mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                 )
 
 elif section == "Código Python":
-    st.markdown("### Generación de Codigo")
+    st.markdown("### Generación de Código")
     st.markdown(
         """
         💡 **Ejemplos de uso**:
@@ -113,9 +119,9 @@ elif section == "Dataset":
             data = generate_content(task, f"Dataset sobre: {description}", temperature=0.5)
             if data:
                 st.download_button(
-                    "Descargar Dataset", 
-                    data=data.encode('utf-8'), 
-                    file_name="dataset.csv", 
+                    "Descargar Dataset",
+                    data=data.encode('utf-8'),
+                    file_name="dataset.csv",
                     mime="text/csv"
                 )
 
@@ -125,7 +131,7 @@ st.markdown(
     <div style="text-align: center;">
         <strong>Desarrollador:</strong> Edwin Quintero Alzate | <strong>Email:</strong> egqa1975@gmail.com
     </div>
-    """, 
+    """,
     unsafe_allow_html=True
 )
 SocialMediaIcons([
