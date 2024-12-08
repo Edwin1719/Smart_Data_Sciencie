@@ -12,7 +12,7 @@ st.set_page_config(page_title="Contenido para Ciencia de Datos con GPT-4o", page
 
 # Cargar las variables de entorno desde el archivo .env
 load_dotenv()  # Carga la clave desde el archivo .env
-openai_api_key = st.secrets["openai"]["api_key"] # Obtiene la clave de la variable de entorno
+openai_api_key = st.secrets["OPENAI_API_KEY"] # Obtiene la clave de la variable de entorno
 
 # Verificar si la clave de OpenAI está vacía
 if not openai_api_key:
