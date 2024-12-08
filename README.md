@@ -37,7 +37,7 @@ Smart Data Science is an interactive application developed with Streamlit that l
 
 -**Email:** egqa1975@gmail.com
 
-- **Social Media:**
+**Social Media:**
 - Facebook 
 - LinkedIn
 - GitHub
