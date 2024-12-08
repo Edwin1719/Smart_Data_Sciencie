@@ -7,21 +7,11 @@ from st_social_media_links import SocialMediaIcons
 import os
 from dotenv import load_dotenv  # Cargar variables de entorno desde el archivo .env
 
-import streamlit as st
-from openai import OpenAI  # Importa tu cliente OpenAI
-
 # Configurar la página
 st.set_page_config(page_title="Contenido para Ciencia de Datos con GPT-4o", page_icon="🤖")
 
-# Acceder directamente a la clave desde los secretos de Streamlit
-try:
-    openai_api_key = st.secrets["OPENAI_API_KEY"]
-    client = OpenAI(api_key=openai_api_key)
-except KeyError:
-    st.error("No se encontró la clave de OpenAI en los secretos configurados.")
-
 # Función genérica para solicitudes a OpenAI
-def generate_content(task, prompt, max_tokens=1500, temperature=0.7):
+def generate_content(client, task, prompt, max_tokens=1500, temperature=0.7):
     try:
         response = client.chat.completions.create(
             model="gpt-4o",
@@ -59,82 +49,95 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Configurar la barra lateral
-section = st.sidebar.selectbox("Selecciona una opción", ["Resúmenes Técnicos", "Código Python", "Dataset"])
-
-# Lógica para las secciones
-if section == "Resúmenes Técnicos":
-    st.markdown("### Generación de Resúmenes Técnicos")
-    st.markdown(
-        """
-        🔍 **Ejemplos de uso**:
-    - (Análisis de clustering, Redes neuronales profundas, Visualización de datos, Optimización de algoritmos)
-        """
-    )
-    topic = st.text_input("Ingrese un tema de ciencia de datos:")
-    if st.button("Generar Resumen"):
-        if topic:
-            task = "Eres un experto en ciencia de datos. Proporciona resúmenes técnicos claros con ejemplos prácticos."
-            summary = generate_content(task, f"Explica: {topic}", temperature=0.6)
-            if summary:
-                st.markdown(f"### Resumen sobre {topic}")
-                st.markdown(summary)
-                st.download_button(
-                    "Descargar Resumen",
-                    data=create_word_doc(summary, title=f"Resumen sobre {topic}"),
-                    file_name="resumen_tecnico.docx",
-                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                )
-
-elif section == "Código Python":
-    st.markdown("### Generación de Código")
-    st.markdown(
-        """
-        💡 **Ejemplos de uso**:
-        - (Creación de gráficos, Conectar a bases de datos SQL, Web scraping de datos de precios, Crear una API REST básica con FastAPI)
-        """
-    )
-    description = st.text_input("Describe qué código necesitas:")
-    if st.button("Generar Código"):
-        if description:
-            task = "Eres un experto en Python. Genera código eficiente sin explicaciones adicionales."
-            code = generate_content(task, f"Escribe código para: {description}", temperature=0.2)
-            if code:
-                st.code(code, language="python")
-                st.download_button("Descargar Código", data=code, file_name="codigo.py", mime="text/plain")
-
-elif section == "Dataset":
-    st.markdown("### Generación de Dataset")
-    st.markdown(
-        """
-        📊 **Ejemplos de uso**:
-- (Datos de ventas para 2024, Clientes de e-commerce, Datos demográficos de una región, Precios de criptomonedas históricas)
-        """
-    )
-    description = st.text_input("Describe el dataset que necesitas:")
-    if st.button("Generar Dataset"):
-        if description:
-            task = "Genera datos en formato CSV con encabezados y al menos 100 filas."
-            data = generate_content(task, f"Dataset sobre: {description}", temperature=0.5)
-            if data:
-                st.download_button(
-                    "Descargar Dataset",
-                    data=data.encode('utf-8'),
-                    file_name="dataset.csv",
-                    mime="text/csv"
-                )
-
-# Pie de página
-st.markdown(
-    """
-    <div style="text-align: center;">
-        <strong>Desarrollador:</strong> Edwin Quintero Alzate | <strong>Email:</strong> egqa1975@gmail.com
-    </div>
-    """,
-    unsafe_allow_html=True
+# Campo para que el usuario introduzca su clave OpenAI
+st.sidebar.markdown("## Configuración de la clave API de OpenAI")
+user_api_key = st.sidebar.text_input(
+    "Por favor, ingrese su clave de API de OpenAI aquí:", 
+    type="password"
 )
-SocialMediaIcons([
-    "https://www.facebook.com/edwin.quinteroalzate",
-    "https://www.linkedin.com/in/edwinquintero0329/",
-    "https://github.com/Edwin1719",
-]).render()
+
+if user_api_key:
+    # Crear el cliente con la clave ingresada
+    client = OpenAI(api_key=user_api_key)
+
+    # Configurar la barra lateral
+    section = st.sidebar.selectbox("Selecciona una opción", ["Resúmenes Técnicos", "Código Python", "Dataset"])
+
+    # Lógica para las secciones
+    if section == "Resúmenes Técnicos":
+        st.markdown("### Generación de Resúmenes Técnicos")
+        st.markdown(
+            """
+            🔍 **Ejemplos de uso**:
+        - (Análisis de clustering, Redes neuronales profundas, Visualización de datos, Optimización de algoritmos)
+            """
+        )
+        topic = st.text_input("Ingrese un tema de ciencia de datos:")
+        if st.button("Generar Resumen"):
+            if topic:
+                task = "Eres un experto en ciencia de datos. Proporciona resúmenes técnicos claros con ejemplos prácticos."
+                summary = generate_content(client, task, f"Explica: {topic}", temperature=0.6)
+                if summary:
+                    st.markdown(f"### Resumen sobre {topic}")
+                    st.markdown(summary)
+                    st.download_button(
+                        "Descargar Resumen",
+                        data=create_word_doc(summary, title=f"Resumen sobre {topic}"),
+                        file_name="resumen_tecnico.docx",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    )
+
+    elif section == "Código Python":
+        st.markdown("### Generación de Código")
+        st.markdown(
+            """
+            💡 **Ejemplos de uso**:
+            - (Creación de gráficos, Conectar a bases de datos SQL, Web scraping de datos de precios, Crear una API REST básica con FastAPI)
+            """
+        )
+        description = st.text_input("Describe qué código necesitas:")
+        if st.button("Generar Código"):
+            if description:
+                task = "Eres un experto en Python. Genera código eficiente sin explicaciones adicionales."
+                code = generate_content(client, task, f"Escribe código para: {description}", temperature=0.2)
+                if code:
+                    st.code(code, language="python")
+                    st.download_button("Descargar Código", data=code, file_name="codigo.py", mime="text/plain")
+
+    elif section == "Dataset":
+        st.markdown("### Generación de Dataset")
+        st.markdown(
+            """
+            📊 **Ejemplos de uso**:
+    - (Datos de ventas para 2024, Clientes de e-commerce, Datos demográficos de una región, Precios de criptomonedas históricas)
+            """
+        )
+        description = st.text_input("Describe el dataset que necesitas:")
+        if st.button("Generar Dataset"):
+            if description:
+                task = "Genera datos en formato CSV con encabezados y al menos 100 filas."
+                data = generate_content(client, task, f"Dataset sobre: {description}", temperature=0.5)
+                if data:
+                    st.download_button(
+                        "Descargar Dataset",
+                        data=data.encode('utf-8'),
+                        file_name="dataset.csv",
+                        mime="text/csv"
+                    )
+
+    # Pie de página
+    st.markdown(
+        """
+        <div style="text-align: center;">
+            <strong>Desarrollador:</strong> Edwin Quintero Alzate | <strong>Email:</strong> egqa1975@gmail.com
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    SocialMediaIcons([
+        "https://www.facebook.com/edwin.quinteroalzate",
+        "https://www.linkedin.com/in/edwinquintero0329/",
+        "https://github.com/Edwin1719",
+    ]).render()
+else:
+    st.warning("Por favor, ingresa tu clave de API para continuar con la aplicación.")
