@@ -1,0 +1,6 @@
+streamlit
+openai
+python-docx
+st-social-media-links
+python-dotenv
+pandas
