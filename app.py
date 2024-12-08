@@ -7,7 +7,7 @@ from st_social_media_links import SocialMediaIcons
 import os
 from dotenv import load_dotenv  # Cargar variables de entorno desde el archivo .env
 
-# Configurar la página como el primer comando
+# Configuracion la página
 st.set_page_config(page_title="Contenido para Ciencia de Datos con GPT-4o", page_icon="🤖")
 
 # Cargar la clave de OpenAI desde el archivo .env
