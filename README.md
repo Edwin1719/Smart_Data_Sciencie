@@ -40,4 +40,4 @@ Smart Data Science is an interactive application developed with Streamlit that l
 **Social Media:**
 - [Portafolio_Notion](https://distinct-buzzard-43f.notion.site/Project-Portfolio-25bcb76c3d584d2c9045ed7e070b9d08)
 - [LinkedIn](https://www.linkedin.com/in/edwinquintero0329/)
-- [Facebook]()
+- [Facebook](https://web.facebook.com/edwin.quinteroalzate)
