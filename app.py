@@ -7,19 +7,18 @@ from st_social_media_links import SocialMediaIcons
 import os
 from dotenv import load_dotenv  # Cargar variables de entorno desde el archivo .env
 
+import streamlit as st
+from openai import OpenAI  # Importa tu cliente OpenAI
+
 # Configurar la página
 st.set_page_config(page_title="Contenido para Ciencia de Datos con GPT-4o", page_icon="🤖")
 
-# Cargar las variables de entorno desde el archivo .env
-load_dotenv()  # Carga la clave desde el archivo .env
-openai_api_key = st.secrets["OPENAI_API_KEY"] # Obtiene la clave de la variable de entorno
-
-# Verificar si la clave de OpenAI está vacía
-if not openai_api_key:
-    st.error("No se encontró la clave de OpenAI. Asegúrese de configurar OPENAI_API_KEY en el archivo .env.")
-else:
-    # Configurar el cliente OpenAI con la clave obtenida
+# Acceder directamente a la clave desde los secretos de Streamlit
+try:
+    openai_api_key = st.secrets["OPENAI_API_KEY"]
     client = OpenAI(api_key=openai_api_key)
+except KeyError:
+    st.error("No se encontró la clave de OpenAI en los secretos configurados.")
 
 # Función genérica para solicitudes a OpenAI
 def generate_content(task, prompt, max_tokens=1500, temperature=0.7):
