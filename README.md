@@ -31,4 +31,13 @@ Smart Data Science is an interactive application developed with Streamlit that l
   
 - **Datasets:** Specify the type of dataset you need and download an automatically generated CSV file.
 
+**Developer**
 
+-**Name:** Edwin Quintero Alzate
+
+-**Email:** egqa1975@gmail.com
+
+- **Social Media:**
+- Facebook 
+- LinkedIn
+- GitHub
